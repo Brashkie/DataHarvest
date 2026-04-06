@@ -262,7 +262,3 @@ HUGGINGFACE_TOKEN=
 ## License
 
 MIT — Built by [Brashkie / Hepein Oficial](https://github.com/Brashkie)
-
-## Licencia
-
-MIT — Desarrollado por [Brashkie / Hepein Oficial](https://github.com/Brashkie)
