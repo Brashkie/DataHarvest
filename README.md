@@ -4,7 +4,7 @@
 
 ![DataHarvest Logo](frontend/public/dataharvest_logo.svg)
 
-**Plataforma profesional de scraping y análisis de datos**
+**Professional data scraping & analytics platform**
 
 [![Python](https://img.shields.io/badge/Python-3.11-blue?logo=python)](https://python.org)
 [![Flask](https://img.shields.io/badge/Flask-3.0.3-black?logo=flask)](https://flask.palletsprojects.com)
@@ -20,58 +20,58 @@
 
 ---
 
-## ¿Qué es DataHarvest?
+## Overview
 
-DataHarvest es una plataforma full-stack para extraer, procesar, analizar y exportar datos de cualquier sitio web. Cuenta con un frontend moderno en React con actualizaciones en tiempo real vía WebSocket, un backend en Flask + Celery para procesamiento en segundo plano, y soporte para múltiples motores de scraping.
+DataHarvest is a full-stack data platform for scraping, processing, analyzing, and exporting data from any website. It features a modern React frontend with real-time WebSocket updates, a Flask + Celery backend for background task processing, and support for multiple scraping engines.
 
-## Características principales
+## Features
 
-- **Scraping multi-motor** — Playwright, Selenium, Requests, CloudScraper con selección automática
-- **Progreso en tiempo real** — actualizaciones vía WebSocket mientras los jobs se ejecutan
-- **URL Tester inteligente** — detecta Cloudflare, sitios con JS pesado y errores HTTP antes de crear jobs
-- **Almacenamiento optimizado** — Parquet (compresión Snappy) + PostgreSQL + Redis
-- **Onboarding guiado** — tour con spotlight para usuarios nuevos, guías por módulo
-- **Analytics** — perfiles EDA, SQL con DuckDB, Polars para procesamiento de alto rendimiento
-- **AI / ML Studio** — entrenamiento de modelos con XGBoost, scikit-learn y TensorFlow
-- **Pipelines ETL** — editor visual con ReactFlow
-- **Exportación** — CSV, Excel, JSON, Parquet
-- **Listo para Docker** — docker-compose completo con todos los servicios
+- **Multi-engine scraping** — Playwright, Selenium, Requests, CloudScraper with auto-selection
+- **Real-time progress** — WebSocket updates via Socket.IO while jobs run
+- **Smart URL Tester** — detects Cloudflare, JS-heavy sites, HTTP errors before creating jobs
+- **Data storage** — Parquet (Snappy compression) + PostgreSQL + Redis
+- **Guided onboarding** — spotlight tour for new users, per-module guides
+- **Analytics** — EDA profiles, DuckDB SQL, Polars for high-performance processing
+- **AI/ML Studio** — XGBoost, scikit-learn, TensorFlow model training
+- **Pipelines** — Visual ETL editor with ReactFlow
+- **Exports** — CSV, Excel, JSON, Parquet
+- **Docker ready** — full docker-compose with all services
 
-## Stack tecnológico
+## Stack
 
 ### Frontend
-| Tecnología | Versión | Uso |
-|------------|---------|-----|
-| React | 19 | Framework de UI |
-| TanStack Start | 1.x | Framework SSR |
-| TanStack Router | latest | Enrutamiento basado en archivos |
-| TanStack Query | latest | Estado del servidor |
-| Tailwind CSS | v4 | Estilos |
-| Zustand | latest | Estado del cliente |
-| Recharts | latest | Visualización de datos |
-| Socket.IO Client | latest | Actualizaciones en tiempo real |
-| Lucide React | latest | Íconos |
+| Tech | Version | Purpose |
+|------|---------|---------|
+| React | 19 | UI framework |
+| TanStack Start | 1.x | SSR framework |
+| TanStack Router | latest | File-based routing |
+| TanStack Query | latest | Server state management |
+| Tailwind CSS | v4 | Styling |
+| Zustand | latest | Client state |
+| Recharts | latest | Data visualization |
+| Socket.IO Client | latest | Real-time updates |
+| Lucide React | latest | Icons |
 
 ### Backend
-| Tecnología | Versión | Uso |
-|------------|---------|-----|
-| Flask | 3.0.3 | Framework de API |
-| Celery | 5.4 | Cola de tareas |
+| Tech | Version | Purpose |
+|------|---------|---------|
+| Flask | 3.0.3 | API framework |
+| Celery | 5.4 | Task queue |
 | SQLAlchemy | latest | ORM |
-| PostgreSQL | 16 | Base de datos principal |
-| Redis | 7 | Broker + caché |
-| Polars | latest | DataFrames de alto rendimiento |
-| PyArrow | latest | Almacenamiento Parquet |
-| Playwright | latest | Automatización de navegador |
-| Selenium | latest | Automatización de navegador |
-| CloudScraper | latest | Bypass de Cloudflare |
-| BeautifulSoup4 | latest | Parsing HTML |
-| DuckDB | latest | SQL en proceso |
-| XGBoost | latest | Modelos ML |
+| PostgreSQL | 16 | Primary database |
+| Redis | 7 | Broker + cache |
+| Polars | latest | Fast DataFrame |
+| PyArrow | latest | Parquet storage |
+| Playwright | latest | Browser automation |
+| Selenium | latest | Browser automation |
+| CloudScraper | latest | Cloudflare bypass |
+| BeautifulSoup4 | latest | HTML parsing |
+| DuckDB | latest | In-process SQL |
+| XGBoost | latest | ML models |
 | TensorFlow | 2.17 | Deep learning |
-| Prophet | 1.1.5 | Series de tiempo |
+| Prophet | 1.1.5 | Time series |
 
-## Estructura del proyecto
+## Project Structure
 
 ```
 DataHarvest/
@@ -80,12 +80,12 @@ DataHarvest/
 │   │   ├── components/
 │   │   │   ├── layout/        # AppShell, Sidebar, TopBar
 │   │   │   ├── onboarding/    # TourManager, TourSpotlight, TourTooltip
-│   │   │   └── ui/            # Componentes UI compartidos
-│   │   ├── hooks/             # useApi, hooks de React Query
-│   │   ├── lib/               # Instancia Axios, Socket.IO
+│   │   │   └── ui/            # Shared UI components
+│   │   ├── hooks/             # useApi, React Query hooks
+│   │   ├── lib/               # Axios instance, Socket.IO
 │   │   ├── pages/             # Dashboard, Scraper, Analytics, etc.
-│   │   ├── routes/            # Rutas de TanStack Router
-│   │   └── stores/            # Stores de Zustand
+│   │   ├── routes/            # TanStack Router routes
+│   │   └── stores/            # Zustand stores
 │   ├── public/
 │   │   └── dataharvest_logo.svg
 │   ├── Dockerfile
@@ -93,54 +93,53 @@ DataHarvest/
 │
 ├── backend/                   # Flask + Celery
 │   ├── app/
-│   │   ├── api/               # Blueprints REST
+│   │   ├── api/               # REST blueprints
 │   │   │   ├── scraper.py
 │   │   │   ├── tables.py
 │   │   │   ├── analytics.py
 │   │   │   └── ...
-│   │   ├── core/              # Modelos DB, config Celery
+│   │   ├── core/              # DB models, Celery config
 │   │   │   ├── database.py
 │   │   │   ├── celery_app.py
 │   │   │   └── socket_events.py
 │   │   ├── scrapers/
 │   │   │   └── engines/
 │   │   │       └── scraper_engine.py  # Playwright, Selenium, Requests, CloudScraper
-│   │   ├── tasks/             # Tareas Celery
+│   │   ├── tasks/             # Celery tasks
 │   │   │   ├── scraper_tasks.py
 │   │   │   ├── analytics_tasks.py
 │   │   │   ├── ai_tasks.py
 │   │   │   └── ...
-│   │   └── utils/             # Extensiones Cython (.pyx)
+│   │   └── utils/             # Cython extensions (.pyx)
 │   ├── data/
-│   │   ├── scraped/           # Resultados en Parquet
-│   │   └── uploads/           # Datasets subidos
+│   │   ├── scraped/           # Parquet results
+│   │   └── uploads/           # Uploaded datasets
 │   ├── Dockerfile
 │   ├── requirements.txt
 │   └── run.py
 │
 ├── docker-compose.yml
-├── README.md
-└── README.es.md
+└── README.md
 ```
 
-## Inicio rápido
+## Quick Start
 
-### Requisitos previos
+### Prerequisites
 - Python 3.11+
 - Node.js 20+
 - PostgreSQL 16+
-- Redis 7+ (via WSL en Windows)
-- Docker (opcional)
+- Redis 7+ (via WSL on Windows)
+- Docker (optional)
 
-### Configuración para desarrollo
+### Development Setup
 
-**1. Clona el repositorio:**
+**1. Clone the repo:**
 ```bash
 git clone https://github.com/Brashkie/DataHarvest.git
 cd DataHarvest
 ```
 
-**2. Configurar backend:**
+**2. Backend setup:**
 ```bash
 cd backend
 python -m venv venv
@@ -151,27 +150,27 @@ pip install -r requirements.txt
 playwright install chromium
 ```
 
-**3. Configurar variables de entorno:**
+**3. Configure environment:**
 ```bash
 cp backend/.env.example backend/.env
-# Edita DATABASE_URL, REDIS_URL, etc.
+# Edit DATABASE_URL, REDIS_URL, etc.
 ```
 
-**4. Configurar frontend:**
+**4. Frontend setup:**
 ```bash
 cd frontend
 npm install
 ```
 
-**5. Iniciar Redis (WSL en Windows):**
+**5. Start Redis (WSL on Windows):**
 ```bash
 sudo service redis-server start
 ```
 
-**6. Levantar todos los servicios (3 terminales):**
+**6. Run all services (3 terminals):**
 
 ```bash
-# Terminal 1 — Backend Flask
+# Terminal 1 — Backend
 cd backend && venv\Scripts\activate && py run.py
 
 # Terminal 2 — Celery Worker
@@ -182,40 +181,40 @@ celery -A run.celery worker -Q scraping,pipelines,analytics,ai,exports -c 1 --lo
 cd frontend && npm run dev
 ```
 
-**7. Abre:** http://localhost:3000
+**7. Open:** http://localhost:3000
 
-### Con Docker
+### Docker Setup
 
 ```bash
 docker-compose up --build
 ```
 
-Abre: http://localhost:80
+Open: http://localhost:80
 
-## Modelos de base de datos
+## Database Models
 
-| Tabla | Descripción |
-|-------|-------------|
-| `scraper_jobs` | Jobs de scraping con estado, config y resultados |
-| `scraper_profiles` | Configuraciones reutilizables de scraper |
-| `pipelines` | Definiciones de pipelines ETL (ReactFlow) |
-| `pipeline_runs` | Historial de ejecuciones de pipelines |
-| `datasets` | Metadata de datasets (archivos Parquet) |
-| `ml_models` | Registro de modelos entrenados |
-| `job_logs` | Logs en tiempo real por job |
-| `export_jobs` | Registro de tareas de exportación |
+| Table | Purpose |
+|-------|---------|
+| `scraper_jobs` | Scraping job records with status, config, results |
+| `scraper_profiles` | Reusable scraper configurations |
+| `pipelines` | ETL pipeline definitions (ReactFlow) |
+| `pipeline_runs` | Pipeline execution history |
+| `datasets` | Dataset metadata (Parquet files) |
+| `ml_models` | Trained model registry |
+| `job_logs` | Real-time logs per job |
+| `export_jobs` | Export task records |
 
-## Motores de scraping
+## Scraping Engines
 
-| Motor | Recomendado para |
-|-------|-----------------|
-| `auto` | Selección automática según análisis de URL |
-| `playwright` | Sitios con JS pesado, SPAs, apps React/Vue |
-| `selenium` | Interacciones complejas, llenado de formularios |
-| `requests` | Páginas HTML estáticas (más rápido) |
-| `cloudscraper` | Sitios protegidos con Cloudflare |
+| Engine | Best for |
+|--------|---------|
+| `auto` | Automatic selection based on URL analysis |
+| `playwright` | JS-heavy sites, SPAs, React/Vue apps |
+| `selenium` | Complex interactions, form filling |
+| `requests` | Fast static HTML pages |
+| `cloudscraper` | Cloudflare-protected sites |
 
-## Endpoints de la API
+## API Endpoints
 
 ```
 GET    /api/v1/health/
@@ -233,34 +232,36 @@ GET    /api/v1/analytics/...
 GET    /api/v1/monitor/...
 ```
 
-Documentación completa: http://localhost:5000/api/docs/
+Full API docs: http://localhost:5000/api/docs/
 
-## Variables de entorno
+## Environment Variables
 
 ```env
-# Aplicación
+# App
 APP_ENV=development
-APP_SECRET_KEY=tu-clave-secreta
+APP_SECRET_KEY=your-secret-key
 APP_PORT=5000
 
-# Base de datos
+# Database
 DATABASE_URL=postgresql://postgres:postgres123@localhost:5432/dataharvest
 REDIS_URL=redis://localhost:6379/0
 
 # Celery
-CELERY_BROKER_URL=redis://redis:6379/1
-CELERY_RESULT_BACKEND=redis://redis:6379/2
+CELERY_BROKER_URL=redis://localhost:6379/1
+CELERY_RESULT_BACKEND=redis://localhost:6379/2
 
 # Scraping
 PLAYWRIGHT_HEADLESS=true
 REQUEST_TIMEOUT=30
-MAX_CONCURRENT_SCRAPERS=10
 
-# AI/ML (opcional)
+# AI/ML (optional)
 OPENAI_API_KEY=
 HUGGINGFACE_TOKEN=
-MLFLOW_TRACKING_URI=http://localhost:5001
 ```
+
+## License
+
+MIT — Built by [Brashkie / Hepein Oficial](https://github.com/Brashkie)
 
 ## Licencia
 
