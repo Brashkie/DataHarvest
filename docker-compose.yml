@@ -1,0 +1,187 @@
+version: "3.9"
+
+services:
+  # ── Flask API ──────────────────────────────────────────────────────────────
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    environment:
+      - APP_ENV=production
+      - DATABASE_URL=postgresql://dataharvest:dataharvest@postgres:5432/dataharvest
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/1
+      - CELERY_RESULT_BACKEND=redis://redis:6379/2
+      - MONGODB_URL=mongodb://mongo:27017/dataharvest
+    volumes:
+      - ./backend/data:/app/data
+      - ./backend/exports:/app/exports
+      - ./backend/logs:/app/logs
+    depends_on:
+      - postgres
+      - redis
+      - mongo
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/api/v1/health/ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ── Celery Workers ─────────────────────────────────────────────────────────
+  worker-scraping:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    command: celery -A run.celery worker -Q scraping -c 4 --loglevel=info -n scraping@%h
+    environment:
+      - APP_ENV=production
+      - DATABASE_URL=postgresql://dataharvest:dataharvest@postgres:5432/dataharvest
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/1
+      - CELERY_RESULT_BACKEND=redis://redis:6379/2
+    volumes:
+      - ./backend/data:/app/data
+      - ./backend/exports:/app/exports
+    depends_on:
+      - api
+      - redis
+    restart: unless-stopped
+
+  worker-ai:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    command: celery -A run.celery worker -Q ai,analytics -c 2 --loglevel=info -n ai@%h
+    environment:
+      - APP_ENV=production
+      - DATABASE_URL=postgresql://dataharvest:dataharvest@postgres:5432/dataharvest
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/1
+      - CELERY_RESULT_BACKEND=redis://redis:6379/2
+    volumes:
+      - ./backend/data:/app/data
+    depends_on:
+      - api
+      - redis
+    restart: unless-stopped
+
+  worker-general:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    command: celery -A run.celery worker -Q pipelines,exports,monitoring,maintenance -c 4 --loglevel=info -n general@%h
+    environment:
+      - APP_ENV=production
+      - DATABASE_URL=postgresql://dataharvest:dataharvest@postgres:5432/dataharvest
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/1
+      - CELERY_RESULT_BACKEND=redis://redis:6379/2
+    volumes:
+      - ./backend/data:/app/data
+      - ./backend/exports:/app/exports
+    depends_on:
+      - api
+      - redis
+    restart: unless-stopped
+
+  # ── Celery Beat (scheduler) ───────────────────────────────────────────────
+  beat:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    command: celery -A run.celery beat --loglevel=info
+    environment:
+      - APP_ENV=production
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/1
+      - CELERY_RESULT_BACKEND=redis://redis:6379/2
+    depends_on:
+      - redis
+    restart: unless-stopped
+
+  # ── Flower (Celery monitor UI) ────────────────────────────────────────────
+  flower:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    command: celery -A run.celery flower --port=5555 --broker=redis://redis:6379/1
+    ports:
+      - "5555:5555"
+    depends_on:
+      - redis
+    restart: unless-stopped
+
+  # ── Frontend (Vite build served by Nginx) ─────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - api
+    restart: unless-stopped
+
+  # ── PostgreSQL ────────────────────────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: dataharvest
+      POSTGRES_USER: dataharvest
+      POSTGRES_PASSWORD: dataharvest
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dataharvest"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Redis ─────────────────────────────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    command: redis-server --appendonly yes --maxmemory 512mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+  # ── MongoDB ───────────────────────────────────────────────────────────────
+  mongo:
+    image: mongo:7
+    environment:
+      MONGO_INITDB_DATABASE: dataharvest
+    volumes:
+      - mongo_data:/data/db
+    ports:
+      - "27017:27017"
+    restart: unless-stopped
+
+  # ── MLflow Tracking ───────────────────────────────────────────────────────
+  mlflow:
+    image: ghcr.io/mlflow/mlflow:v2.15.1
+    command: mlflow server --host 0.0.0.0 --port 5001 --backend-store-uri sqlite:///mlflow.db
+    ports:
+      - "5001:5001"
+    volumes:
+      - mlflow_data:/mlflow
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  redis_data:
+  mongo_data:
+  mlflow_data:

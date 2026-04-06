@@ -1,0 +1,12 @@
+[build-system]
+requires = ["setuptools>=68", "cython>=3.0.11", "numpy"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name = "dataharvest-backend"
+version = "2.0.0"
+description = "DataHarvest Backend — High Performance Data Platform"
+requires-python = ">=3.11"
+
+[tool.cython]
+language_level = "3"
