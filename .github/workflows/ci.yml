@@ -1,0 +1,122 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ── Frontend: typecheck, tests, production build ─────────────────────────────
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type check
+        run: npx tsc --noEmit
+
+      # Narrowly scoped to dead imports/vars (see biome.json) — catches
+      # exactly the class of bug that broke this job before: unused imports/vars
+      # that tsc's noUnusedLocals also flags, plus a couple of real dead-code
+      # wiring bugs Biome's semantic analysis found (see commit history).
+      - name: Biome (unused imports/vars)
+        run: npm run biome
+
+      - name: Test
+        run: npx vitest run --passWithNoTests
+
+      - name: Build
+        run: npm run build
+
+  # ── Python -> TypeScript type bridge: fail if types.generated.ts is stale ────
+  # Only needs `pydantic` installed (export_schema.py loads requests.py by file
+  # path, bypassing the Flask/Celery app package), so this stays fast.
+  types-drift:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install pydantic (pinned to requirements.txt)
+        run: |
+          PYDANTIC_VERSION=$(grep -m1 '^pydantic==' requirements.txt | cut -d= -f3)
+          pip install "pydantic==$PYDANTIC_VERSION"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Regenerate types from backend schemas
+        run: node scripts/cli.js gen-types
+
+      - name: Fail if generated types drifted from committed file
+        run: |
+          if ! git diff --exit-code -- src/lib/types.generated.ts; then
+            echo "::error::src/lib/types.generated.ts is out of date."
+            echo "::error::Run 'node scripts/cli.js gen-types' locally and commit the result."
+            exit 1
+          fi
+
+  # ── Lint (advisory) ───────────────────────────────────────────────────────────
+  # There is known pre-existing lint debt on both sides (frontend ESLint,
+  # backend black/ruff/mypy) that hasn't been cleaned up yet. These steps run
+  # and report on every PR but use continue-on-error so they don't block merges
+  # until that debt is paid down — flip continue-on-error to false per step once
+  # a side is clean to make it a real gate.
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: package-lock.json
+      - name: Install frontend dependencies
+        run: npm ci
+      - name: ESLint (advisory)
+        continue-on-error: true
+        run: npm run lint
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install backend lint tools
+        run: |
+          BLACK_VERSION=$(grep -m1 '^black==' requirements.txt | cut -d= -f3)
+          RUFF_VERSION=$(grep -m1 '^ruff==' requirements.txt | cut -d= -f3)
+          MYPY_VERSION=$(grep -m1 '^mypy==' requirements.txt | cut -d= -f3)
+          pip install "black==$BLACK_VERSION" "ruff==$RUFF_VERSION" "mypy==$MYPY_VERSION"
+      - name: black --check (advisory)
+        continue-on-error: true
+        run: black --check app
+      - name: ruff check (advisory)
+        continue-on-error: true
+        run: ruff check app
+      - name: mypy (advisory)
+        continue-on-error: true
+        run: mypy app --ignore-missing-imports

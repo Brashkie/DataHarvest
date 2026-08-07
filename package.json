@@ -1,0 +1,110 @@
+{
+  "name": "dataharvest",
+  "private": true,
+  "version": "3.0.0",
+  "type": "module",
+  "description": "DataHarvest — full-stack data scraping & analytics platform",
+  "bin": {
+    "dataharvest": "./scripts/cli.js"
+  },
+  "imports": {
+    "#/*": "./src/*"
+  },
+  "scripts": {
+    "cli": "node scripts/cli.js",
+    "dev": "node scripts/cli.js dev",
+    "backend": "node scripts/cli.js backend",
+    "frontend": "node scripts/cli.js frontend",
+    "worker": "node scripts/cli.js worker",
+    "beat": "node scripts/cli.js beat",
+    "gen-types": "node scripts/cli.js gen-types",
+    "dev:frontend": "vite dev --port 3000",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "lint": "eslint",
+    "format": "prettier --check .",
+    "check": "prettier --write . && eslint --fix",
+    "gen:types": "node scripts/gen-types.mjs",
+    "biome": "biome check src",
+    "biome:fix": "biome check --write src"
+  },
+  "dependencies": {
+    "@radix-ui/react-checkbox": "^1.2.2",
+    "@radix-ui/react-hover-card": "^1.1.10",
+    "@radix-ui/react-separator": "^1.1.4",
+    "@radix-ui/react-slot": "^1.2.0",
+    "@tailwindcss/vite": "^4.1.18",
+    "@tanstack/ai": "latest",
+    "@tanstack/ai-anthropic": "latest",
+    "@tanstack/ai-client": "latest",
+    "@tanstack/ai-gemini": "latest",
+    "@tanstack/ai-ollama": "latest",
+    "@tanstack/ai-openai": "latest",
+    "@tanstack/ai-react": "latest",
+    "@tanstack/react-devtools": "latest",
+    "@tanstack/react-query": "^5.96.1",
+    "@tanstack/react-query-devtools": "^5.96.1",
+    "@tanstack/react-router": "1.168.10",
+    "@tanstack/react-router-devtools": "1.166.11",
+    "@tanstack/react-router-ssr-query": "1.166.10",
+    "@tanstack/react-start": "1.167.16",
+    "@tanstack/router-plugin": "1.167.12",
+    "@tanstack/store": "latest",
+    "axios": "^1.14.0",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "immer": "^10.2.0",
+    "lucide-react": "^0.545.0",
+    "marked": "^15.0.8",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "react-dropzone": "^15.0.0",
+    "react-hot-toast": "^2.6.0",
+    "reactflow": "^11.11.4",
+    "recharts": "^3.8.1",
+    "socket.io-client": "^4.8.3",
+    "streamdown": "^2.3.0",
+    "tailwind-merge": "^3.0.2",
+    "tailwindcss": "^4.1.18",
+    "tailwindcss-animate": "^1.0.7",
+    "zod": "^4.3.6",
+    "zustand": "^5.0.12"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.5.5",
+    "@content-collections/core": "^0.15.2",
+    "@content-collections/vite": "^0.3.0",
+    "@tailwindcss/typography": "^0.5.16",
+    "@tanstack/devtools-vite": "0.6.0",
+    "@tanstack/eslint-config": "latest",
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/react": "^16.3.0",
+    "@types/node": "^22.10.2",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "@vitejs/plugin-react": "^5.1.4",
+    "concurrently": "^9.2.1",
+    "jsdom": "^28.1.0",
+    "json-schema-to-typescript": "^15.0.4",
+    "prettier": "^3.8.1",
+    "typescript": "6.0.3",
+    "vite": "^7.3.1",
+    "vite-tsconfig-paths": "^5.1.4",
+    "vitest": "^3.0.5"
+  },
+  "overrides": {
+    "tsconfck": {
+      "typescript": "$typescript"
+    }
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "lightningcss"
+    ]
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

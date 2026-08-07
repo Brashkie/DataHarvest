@@ -1,0 +1,22 @@
+FROM node:20-alpine AS builder
+
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm ci
+
+# Solo lo que el frontend necesita para el build — el build context ahora es
+# la raiz del repo (compartida con el backend), asi que copiamos explicito
+# en vez de `COPY . .` (evita empaquetar app/, .venv/, etc. en la imagen).
+COPY tsconfig.json vite.config.ts content-collections.ts ./
+COPY src/ ./src/
+COPY public/ ./public/
+COPY content/ ./content/
+RUN npm run build
+
+FROM nginx:alpine
+COPY --from=builder /app/dist /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+EXPOSE 80
+EXPOSE 443

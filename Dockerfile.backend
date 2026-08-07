@@ -1,0 +1,27 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Dependencias del sistema
+RUN apt-get update && apt-get install -y \
+    gcc g++ libpq-dev curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Dependencias Python
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Playwright
+RUN pip install playwright && playwright install chromium --with-deps
+
+# Solo lo que el backend necesita — el build context ahora es la raiz del repo
+# (compartida con el frontend), asi que copiamos explicito en vez de `COPY . .`
+COPY app/ ./app/
+COPY run.py worker.py setup.py pyproject.toml ./
+
+# Crear directorios necesarios
+RUN mkdir -p data/scraped data/uploads exports logs
+
+EXPOSE 5050
+
+CMD ["python", "run.py"]

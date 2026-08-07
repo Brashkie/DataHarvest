@@ -1,0 +1,30 @@
+# Python
+.venv/
+**/__pycache__/
+*.pyc
+.env
+data/
+logs/
+exports/
+.ruff_cache/
+
+# Node
+node_modules/
+dist/
+dist-ssr/
+*.local
+.nitro/
+.tanstack/
+.wrangler/
+.output/
+.vinxi/
+__unconfig*
+todos.json
+
+# Rust
+ratelimiter/target/
+
+# General
+.DS_Store
+*.egg-info/
+build/
